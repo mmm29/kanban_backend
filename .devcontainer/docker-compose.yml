@@ -1,0 +1,17 @@
+services:
+  workspace:
+    build: .
+    environment:
+      - DATABASE=postgres://dev:dev@db:5432/dev
+    ports:
+      - "35124:80"
+    volumes:
+      - ..:/workspace
+    command: sleep infinity
+
+  db:
+    build: ../postgresdb
+    environment:
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev
+      POSTGRES_DB: dev
