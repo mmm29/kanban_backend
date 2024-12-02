@@ -1,0 +1,14 @@
+{
+    "dockerComposeFile": "docker-compose.yml",
+    "service": "workspace",
+    "workspaceFolder": "/workspace",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "tamasfe.even-better-toml",
+                "rust-lang.rust-analyzer",
+                "esbenp.prettier-vscode"
+            ]
+        }
+    }
+}
