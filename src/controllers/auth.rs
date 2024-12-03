@@ -148,6 +148,17 @@ async fn on_user_register(server: &context::Server, user_id: UserId) -> Result<(
     Ok(())
 }
 
+fn validate_username(username: &str) -> bool {
+    fn is_allowed_username_character(c: char) -> bool {
+        c.is_alphabetic() || c.is_digit(10) || c == '_'
+    }
+
+    let sufficient_length = username.len() >= 6;
+    let all_chars_allowed = username.chars().all(|c| is_allowed_username_character(c));
+
+    sufficient_length && all_chars_allowed
+}
+
 fn validate_password(password: &str) -> bool {
     const SPECIAL_CHARS: &[char] = &['$', '@', '!'];
 
@@ -159,14 +170,14 @@ fn validate_password(password: &str) -> bool {
         password.chars().any(f)
     }
 
-    let valid_length = password.len() >= 8;
+    let sufficient_length = password.len() >= 8;
     let all_chars_allowed = password.chars().all(|c| is_allowed_password_character(c));
     let has_lowercase_letter = any_char(password, |c| c.is_lowercase());
     let has_uppercase_letter = any_char(password, |c| c.is_uppercase());
     let has_digit = any_char(password, |c| c.is_digit(10));
     let has_special_symbol = any_char(password, |c| SPECIAL_CHARS.into_iter().any(|&sc| sc == c));
 
-    valid_length
+    sufficient_length
         && all_chars_allowed
         && has_lowercase_letter
         && has_uppercase_letter
@@ -183,15 +194,20 @@ pub async fn register(
     let server = context.server()?;
     let sessions = server.sessions();
     let users = server.users();
-
-    // Check if the user with this username already exists.
-    if users.does_user_exist_by_username(&user.username).await? {
-        return Response::from_error("already_exists");
+    
+    // Validate the username.
+    if !validate_username(&user.username) {
+        return Response::from_error("invalid_username");
     }
 
     // Validate the password.
     if !validate_password(&user.password) {
         return Response::from_error("invalid_password");
+    }
+
+    // Check if the user with this username already exists.
+    if users.does_user_exist_by_username(&user.username).await? {
+        return Response::from_error("already_exists");
     }
 
     // Create the user.
@@ -225,7 +241,61 @@ pub async fn get_user(
 
 #[cfg(test)]
 mod tests {
-    use super::validate_password;
+    use super::{validate_password, validate_username};
+
+    #[test]
+    fn username_validation_test() {
+        const POSITIVE: &[&str] = &[
+            "Ab12345_",
+            "12345Ab_",
+            "AAABBb1_",
+            "aaabbB1_",
+            "_aaabbB1",
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789_",
+            "________________________________________________________",
+            "user_user",
+            "test_1514_test",
+            // Very long string, but valid
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789_\
+            abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789_\
+            abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789_\
+            abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789_\
+            abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789_\
+            abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789_\
+            abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789",
+        ];
+
+        const NEGATIVE: &[&str] = &[
+            // Length < 6
+            "",
+            "test",
+            "a",
+            "%",
+            "ABab5",
+            // Not allowed characters
+            "12345678A@",
+            "ABCDEFGH1@",
+            "!@$ABCDEF123",
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZYZ123456789@!$",
+            "12345678a@",
+            "abcdefh1@",
+            "!@$abcdefh123",
+            "abcdefghijklmnopqrstuvwxyz123456789@!$",
+            "abcdefhABCDEF@",
+            "!@$abcdefh_ABCDEF",
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@!$",
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@$!_",
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@$!+"
+        ];
+
+        for &username in POSITIVE {
+            assert!(validate_username(username), "username {} was expected to be valid", username);
+        }
+
+        for &username in NEGATIVE {
+            assert!(!validate_username(username), "username {} was expected to be invalid", username);
+        }
+    }
 
     #[test]
     fn password_validation_test() {
