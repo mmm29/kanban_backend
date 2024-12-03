@@ -222,3 +222,77 @@ pub async fn get_user(
 
     Response::from_data(UserResponse { username })
 }
+
+#[cfg(test)]
+mod tests {
+    use super::validate_password;
+
+    #[test]
+    fn password_validation_test() {
+        // These passwords are expected to be valid.
+        const POSITIVE: &[&str] = &[
+            "Ab12345@",
+            "12345Ab@",
+            "AAABBb1@",
+            "aaabbB1@",
+            "@aaabbB1",
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@$!",
+            // Very long string, but valid
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@$!\
+            abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@$!\
+            abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@$!\
+            abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@$!\
+            abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@$!\
+            abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@$!\
+            abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789",
+        ];
+
+        // These passwords are expected to be invalid.
+        const NEGATIVE: &[&str] = &[
+            // Length < 8
+            "",
+            "test",
+            "a",
+            "%",
+            "ABab1@",
+            // No lowercase
+            "12345678A@",
+            "ABCDEFGH1@",
+            "!@$ABCDEF123",
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZYZ123456789@!$",
+            // No uppercase
+            "12345678a@",
+            "abcdefh1@",
+            "!@$abcdefh123",
+            "abcdefghijklmnopqrstuvwxyz123456789@!$",
+            // No digit
+            "abcdefhABCDEF@",
+            "!@$abcdefhABCDEF",
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@!$",
+            // No special char
+            "ABCabc123",
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789",
+            // Not allowed chars
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@$!_",
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@$!+",
+            "Aa123456@_",
+            "Aa123456@-",
+            "Aa123456@%",
+            "Aa123456^%&*",
+            "Aa123456@\\",
+            "Aa123456@/",
+            "Aa123456@\r\n",
+            "Aa123456@\n",
+            "Aa123456@\t",
+            "Aa123456@\0", // rust strings are not null-terminated
+        ];
+
+        for &password in POSITIVE {
+            assert!(validate_password(password), "password {} was expected to be valid", password);
+        }
+
+        for &password in NEGATIVE {
+            assert!(!validate_password(password), "password {} was expected to be invalid", password);
+        }
+    }
+}
