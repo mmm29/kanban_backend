@@ -148,6 +148,32 @@ async fn on_user_register(server: &context::Server, user_id: UserId) -> Result<(
     Ok(())
 }
 
+fn validate_password(password: &str) -> bool {
+    const SPECIAL_CHARS: &[char] = &['$', '@', '!'];
+
+    fn is_allowed_password_character(c: char) -> bool {
+        c.is_alphabetic() || c.is_digit(10) || SPECIAL_CHARS.into_iter().any(|&sc| sc == c)
+    }
+
+    fn any_char(password: &str, f: impl Fn(char) -> bool) -> bool {
+        password.chars().any(f)
+    }
+
+    let valid_length = password.len() >= 8;
+    let all_chars_allowed = password.chars().all(|c| is_allowed_password_character(c));
+    let has_lowercase_letter = any_char(password, |c| c.is_lowercase());
+    let has_uppercase_letter = any_char(password, |c| c.is_uppercase());
+    let has_digit = any_char(password, |c| c.is_digit(10));
+    let has_special_symbol = any_char(password, |c| SPECIAL_CHARS.into_iter().any(|&sc| sc == c));
+
+    valid_length
+        && all_chars_allowed
+        && has_lowercase_letter
+        && has_uppercase_letter
+        && has_digit
+        && has_special_symbol
+}
+
 #[post("/register", format = "application/json", data = "<user>")]
 pub async fn register(
     context: &ContextState,
@@ -161,6 +187,11 @@ pub async fn register(
     // Check if the user with this username already exists.
     if users.does_user_exist_by_username(&user.username).await? {
         return Response::from_error("already_exists");
+    }
+
+    // Validate the password.
+    if !validate_password(&user.password) {
+        return Response::from_error("invalid_password");
     }
 
     // Create the user.
