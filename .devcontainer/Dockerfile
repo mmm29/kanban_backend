@@ -4,4 +4,4 @@ FROM mcr.microsoft.com/devcontainers/rust:bullseye
 RUN apt-get update && apt-get install -y postgresql-client
 
 # nightly rust
-RUN rustup default nightly
+RUN rustup default nightly && rustup component add clippy rustfmt
