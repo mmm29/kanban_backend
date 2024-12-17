@@ -1,0 +1,50 @@
+[
+    {
+        "username": "Alice1",
+        "password": "@aaabbB1"
+    },
+    {
+        "username": "Bob456",
+        "password": "AAABBb1@"
+    },
+    {
+        "username": "Charlie",
+        "password": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@$!"
+    },
+    {
+        "username": "user165",
+        "password": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@$!!!!!!"
+    },
+    {
+        "username": "user165_user165_user165",
+        "password": "AAABBb1aaaaaaaaaaaaaaaaaaaaaaa@"
+    },
+    {
+        "username": "user165user165user165user165",
+        "password": "AAABBb1aaaaaaaaaaaaaaaaaaaaaaa@"
+    },
+    {
+        "username": "useruseruseruseruseruseruseruseruseruseruseruseruseruser",
+        "password": "AAABBb1aaaaaaaaaaaaaaaaaaaaaaa@"
+    },
+    {
+        "username": "user200",
+        "password": "AAABBb1aaaaaaaaaaaaaaaaaaaaaaa@"
+    },
+    {
+        "username": "user201",
+        "password": "AAABBb1aaaaaaaaaaaaaaaaaaaaaaa@"
+    },
+    {
+        "username": "user202",
+        "password": "AAABBb1aaaaaaaaaaaaaaaaaaaaaaa@"
+    },
+    {
+        "username": "user203",
+        "password": "AAABBb1aaaaaaaaaaaaaaaaaaaaaaa@"
+    },
+    {
+        "username": "user204",
+        "password": "AAABBb1aaaaaaaaaaaaaaaaaaaaaaa@"
+    }
+]
