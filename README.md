@@ -1,3 +1,6 @@
+### About
+Backend for kanban-todo-app
+
 ### Run
 Run with in-memory storage:
 ```bash
