@@ -71,7 +71,10 @@ fn create_context(repos: Repositories) -> Context {
 async fn create_repos(env: &Environment) -> anyhow::Result<Repositories> {
     if let Some(uri) = &env.database_url {
         log::info!("Connecting to database: {}", uri);
-        let db = Arc::new(DatabaseConnection::connect(uri)?);
+        let db = Arc::new(
+            DatabaseConnection::connect(uri)
+                .inspect_err(|err| log::error!("Could not connect to the database: {}", err))?,
+        );
 
         Ok(create_db_repositories(db))
     } else {

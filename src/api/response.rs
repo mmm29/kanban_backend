@@ -45,8 +45,8 @@ impl<'r, 'o: 'r, T: Serialize> response::Responder<'r, 'o> for Response<T> {
             Response::Success(r) => r.respond_to(request),
             Response::Unauthorized => Status::Unauthorized.respond_to(request),
             Response::BadRequest => Status::BadRequest.respond_to(request),
-            Response::ServerError(_error) => {
-                rocket::error_!("ServerError: {:?}", _error);
+            Response::ServerError(err) => {
+                log::error!("Server error: {:?}", err);
                 Status::InternalServerError.respond_to(request)
             }
         }
