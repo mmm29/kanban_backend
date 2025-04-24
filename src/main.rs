@@ -32,7 +32,7 @@ fn read_environment() -> Environment {
 }
 
 fn init_logging() {
-    env_logger::init();
+    log4rs::init_file("log4rs.yml", Default::default()).unwrap();
 }
 
 struct Repositories {
@@ -83,6 +83,8 @@ async fn create_repos(env: &Environment) -> anyhow::Result<Repositories> {
 #[launch]
 async fn rocket() -> _ {
     init_logging();
+
+    log::info!("Start");
 
     let environment = read_environment();
 

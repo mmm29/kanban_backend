@@ -11,5 +11,6 @@ FROM debian:bullseye-slim
 
 COPY --from=builder /usr/local/cargo/bin/backend /usr/local/bin/backend
 COPY ../Rocket.toml .
+COPY ../log4rs.yml .
 
 CMD ["backend"]

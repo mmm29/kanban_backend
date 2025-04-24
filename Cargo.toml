@@ -6,9 +6,9 @@ edition = "2021"
 [dependencies]
 anyhow = "1.0.94"
 async-trait = "0.1.83"
-env_logger = "0.11.5"
 hex = "0.4.3"
 log = "0.4.22"
+log4rs = "1.3.0"
 rand = "0.8.5"
 rocket = { version = "0.5.1", features = ["json"] }
 serde = { version = "1.0.210", features = ["serde_derive"] }
