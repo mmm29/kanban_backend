@@ -1,0 +1,16 @@
+services:
+  apiserver:
+    build:
+      context: ..
+      dockerfile: deployment/Dockerfile
+    environment:
+      - DATABASE=postgres://prod:prod@db:5432/prod
+    ports:
+      - "35124:80"
+
+  db:
+    build: ../postgresdb
+    environment:
+      POSTGRES_USER: prod
+      POSTGRES_PASSWORD: prod
+      POSTGRES_DB: prod
