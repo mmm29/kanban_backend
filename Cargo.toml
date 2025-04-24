@@ -15,3 +15,6 @@ serde = { version = "1.0.210", features = ["serde_derive"] }
 sqlx = { version = "0.8.2", features = ["postgres", "runtime-tokio"] }
 thiserror = "1.0.64"
 tokio = "1.42.0"
+
+[lints.clippy]
+correctness = "deny"
