@@ -73,17 +73,17 @@ impl AuthService {
         password: &str,
     ) -> anyhow::Result<Result<(UserId, SessionToken), CreateUserError>> {
         // Validate the username.
-        if !validate_username(&username) {
+        if !validate_username(username) {
             return Ok(Err(CreateUserError::InvalidUsername));
         }
 
         // Validate the password.
-        if !validate_password(&password) {
+        if !validate_password(password) {
             return Ok(Err(CreateUserError::InvalidPassword));
         }
 
         // Check if the user with this username already exists.
-        if self.users.does_user_exist_by_username(&username).await? {
+        if self.users.does_user_exist_by_username(username).await? {
             return Ok(Err(CreateUserError::UserAlreadyExists));
         }
 
@@ -109,7 +109,7 @@ impl AuthService {
     ) -> anyhow::Result<Result<(UserId, SessionToken), LoginError>> {
         // Find the user by username.
         let Some((user_id, actual_password)) =
-            self.users.find_user_with_password(&username).await?
+            self.users.find_user_with_password(username).await?
         else {
             return Ok(Err(LoginError::UserNotFound));
         };
@@ -129,11 +129,11 @@ impl AuthService {
 
 fn validate_username(username: &str) -> bool {
     fn is_allowed_username_character(c: char) -> bool {
-        c.is_alphabetic() || c.is_digit(10) || c == '_'
+        c.is_alphabetic() || c.is_ascii_digit() || c == '_'
     }
 
     let sufficient_length = username.len() >= 6;
-    let all_chars_allowed = username.chars().all(|c| is_allowed_username_character(c));
+    let all_chars_allowed = username.chars().all(is_allowed_username_character);
 
     sufficient_length && all_chars_allowed
 }
@@ -142,7 +142,7 @@ fn validate_password(password: &str) -> bool {
     const SPECIAL_CHARS: &[char] = &['$', '@', '!'];
 
     fn is_allowed_password_character(c: char) -> bool {
-        c.is_alphabetic() || c.is_digit(10) || SPECIAL_CHARS.into_iter().any(|&sc| sc == c)
+        c.is_alphabetic() || c.is_ascii_digit() || SPECIAL_CHARS.contains(&c)
     }
 
     fn any_char(password: &str, f: impl Fn(char) -> bool) -> bool {
@@ -150,11 +150,11 @@ fn validate_password(password: &str) -> bool {
     }
 
     let sufficient_length = password.len() >= 8;
-    let all_chars_allowed = password.chars().all(|c| is_allowed_password_character(c));
+    let all_chars_allowed = password.chars().all(is_allowed_password_character);
     let has_lowercase_letter = any_char(password, |c| c.is_lowercase());
     let has_uppercase_letter = any_char(password, |c| c.is_uppercase());
-    let has_digit = any_char(password, |c| c.is_digit(10));
-    let has_special_symbol = any_char(password, |c| SPECIAL_CHARS.into_iter().any(|&sc| sc == c));
+    let has_digit = any_char(password, |c| c.is_ascii_digit());
+    let has_special_symbol = any_char(password, |c| SPECIAL_CHARS.contains(&c));
 
     sufficient_length
         && all_chars_allowed

@@ -137,7 +137,7 @@ impl TasksRepository for DbTasks {
         labels: &[&str],
     ) -> anyhow::Result<Vec<TaskCategoryDescription>> {
         let descriptions: Vec<TaskCategoryDescription> = labels
-            .into_iter()
+            .iter()
             .map(|label| TaskCategoryDescription {
                 category_id: generate_random_task_id(),
                 label: label.to_string(),

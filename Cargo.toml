@@ -17,4 +17,5 @@ thiserror = "1.0.64"
 tokio = "1.42.0"
 
 [lints.clippy]
+vec_box = { level = "allow", priority = 1 }
 correctness = "deny"

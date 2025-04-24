@@ -59,8 +59,7 @@ impl TasksRepository for InMemoryTasks {
         // Ensure no task with this ID exists.
         if tasks
             .iter()
-            .find(|t| t.user_id == user_id && t.task_desc.task_id == task_id)
-            .is_some()
+            .any(|t| t.user_id == user_id && t.task_desc.task_id == task_id)
         {
             return Err(anyhow::anyhow!("could not generate unique task id"));
         }
@@ -128,7 +127,7 @@ impl TasksRepository for InMemoryTasks {
         labels: &[&str],
     ) -> anyhow::Result<Vec<TaskCategoryDescription>> {
         let descriptions: Vec<TaskCategoryDescription> = labels
-            .into_iter()
+            .iter()
             .map(|label| TaskCategoryDescription {
                 category_id: tasks::generate_random_task_id(),
                 label: label.to_string(),
@@ -140,8 +139,7 @@ impl TasksRepository for InMemoryTasks {
         for d in &descriptions {
             if categories
                 .iter()
-                .find(|x| x.user_id == user_id && x.category_desc.category_id == d.category_id)
-                .is_some()
+                .any(|x| x.user_id == user_id && x.category_desc.category_id == d.category_id)
             {
                 return Err(anyhow::anyhow!(
                     "could not generate unique task category id"

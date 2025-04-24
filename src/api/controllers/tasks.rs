@@ -36,7 +36,7 @@ fn make_tasks_board(
     categories: &[TaskCategoryDescription],
 ) -> anyhow::Result<TasksBoard> {
     let mut ordered_categories: Vec<Box<TaskCategory>> = categories
-        .into_iter()
+        .iter()
         .map(|ct| {
             Box::new(TaskCategory {
                 category_id: ct.category_id.clone(),

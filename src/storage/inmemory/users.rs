@@ -28,6 +28,7 @@ impl InMemoryUsers {
         }
     }
 
+    #[allow(unused)]
     pub fn add_user(&self, user_id: UserId, username: &str, password: &str) -> anyhow::Result<()> {
         let mut users = self.users.lock().unwrap();
 
