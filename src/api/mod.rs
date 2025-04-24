@@ -9,6 +9,7 @@ mod response;
 pub use context::{Context, ContextState};
 pub use response::Response;
 
+/// Creates [`Rocket`] object that serves API requests using the provided context.
 pub fn initialize_api(context: Arc<Context>) -> Rocket<Build> {
     let api_routes = routes![
         controllers::auth::login,

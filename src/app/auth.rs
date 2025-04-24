@@ -67,6 +67,8 @@ impl AuthService {
         self.sessions.get_authorized_user_id(token).await
     }
 
+    /// Creates a new user with the provided username and password,
+    /// returning the ID of the created user and a [`SessionToken`], or an error otherwise.
     pub async fn create_user(
         &self,
         username: &str,
@@ -127,6 +129,12 @@ impl AuthService {
     }
 }
 
+/// Validates the provided username, returning true if the username is valid.
+/// # Example
+/// ```
+/// assert_eq!(validate_username("user123465"), true);
+/// assert_eq!(validate_username("m"), false);
+/// ```
 fn validate_username(username: &str) -> bool {
     fn is_allowed_username_character(c: char) -> bool {
         c.is_alphabetic() || c.is_ascii_digit() || c == '_'
