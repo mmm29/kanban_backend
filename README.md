@@ -16,3 +16,6 @@ To enable PostgreSQL persistent storage set `DATABASE` environment variable:
 ```bash
 DATABASE=postgres://user:password@host:port/name cargo run
 ```
+
+### How to write documentation
+Follow the guidelines described in [the official Rust documentation](https://doc.rust-lang.org/rustdoc/how-to-write-documentation.html).
